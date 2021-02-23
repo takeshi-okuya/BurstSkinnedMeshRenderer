@@ -22,13 +22,13 @@ namespace WCGL
         {
             [WriteOnly] public NativeArray<Matrix4x4> skinMatrices;
             [ReadOnly] public NativeArray<Matrix4x4> boneMatrices, bindposes;
-            [ReadOnly] public Matrix4x4 rootMatrix;
+            [ReadOnly] public Matrix4x4 invRootMatrix;
 
             void IJob.Execute()
             {
                 for (int i = 0; i < skinMatrices.Length; i++)
                 {
-                    skinMatrices[i] = rootMatrix * boneMatrices[i] * bindposes[i];
+                    skinMatrices[i] = invRootMatrix * boneMatrices[i] * bindposes[i];
                 }
             }
         }
@@ -79,9 +79,7 @@ namespace WCGL
 
         public void UpdateSkinMatrices()
         {
-            var _rootMatrix = renderer.transform.localToWorldMatrix;
             var bones = renderer.bones;
-
             for (int i = 0; i < bones.Length; i++)
             {
                 boneMatrices[i] = bones[i].localToWorldMatrix;
@@ -92,7 +90,7 @@ namespace WCGL
                 skinMatrices = this.skinMatrices,
                 boneMatrices = this.boneMatrices,
                 bindposes = this.bindposes,
-                rootMatrix = _rootMatrix
+                invRootMatrix = renderer.transform.localToWorldMatrix.inverse
             };
 
             handle = job.Schedule();
