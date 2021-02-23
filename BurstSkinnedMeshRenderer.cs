@@ -31,14 +31,16 @@ namespace WCGL
             }
         }
 
+        static List<Material> sharedMaterials = new List<Material>(); //for GC
         public void drawMesh(CommandBuffer command)
         {
             for (int i = 0; i < renderers.Length; i++)
             {
                 var matrix = renderers[i].transform.localToWorldMatrix;
-                var materials = renderers[i].sharedMaterials;
+                renderers[i].GetSharedMaterials(sharedMaterials);
+                int materialCount = sharedMaterials.Count;
 
-                for (int j = 0; j < materials.Length; j++)
+                for (int j = 0; j < materialCount; j++)
                 {
                     cores[i].DrawMesh(command, matrix, material, j);
                 }

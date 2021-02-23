@@ -13,6 +13,7 @@ namespace WCGL
         Mesh mesh;
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
 
+        Transform[] bones;
         NativeArray<Matrix4x4> skinMatrices, boneMatrices, bindposes;
         Matrix4x4[] skinMatricesManaged;
         JobHandle handle;
@@ -70,7 +71,8 @@ namespace WCGL
             initBoneWeight(mesh);
             mesh.UploadMeshData(true);
 
-            int length = skinnedMeshRenderer.bones.Length;
+            bones = skinnedMeshRenderer.bones;
+            int length = bones.Length;
             skinMatrices = new NativeArray<Matrix4x4>(length, Allocator.Persistent);
             boneMatrices = new NativeArray<Matrix4x4>(length, Allocator.Persistent);
             bindposes = new NativeArray<Matrix4x4>(mesh.bindposes, Allocator.Persistent);
@@ -79,7 +81,6 @@ namespace WCGL
 
         public void UpdateSkinMatrices()
         {
-            var bones = renderer.bones;
             for (int i = 0; i < bones.Length; i++)
             {
                 boneMatrices[i] = bones[i].localToWorldMatrix;
